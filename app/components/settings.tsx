@@ -696,13 +696,10 @@ export function Settings() {
       </ListItem>
     );
 
-  const openAIConfigComponent = accessStore.provider ===
-    ServiceProvider.OpenAI && (
+  const ahamaiConfigComponent = accessStore.provider ===
+    ServiceProvider.AhamAI && (
     <>
-      <ListItem
-        title={Locale.Settings.Access.OpenAI.Endpoint.Title}
-        subTitle={Locale.Settings.Access.OpenAI.Endpoint.SubTitle}
-      >
+      <ListItem title="AhamAI Endpoint" subTitle="AhamAI API endpoint URL">
         <input
           type="text"
           value={accessStore.openaiUrl}
@@ -714,14 +711,11 @@ export function Settings() {
           }
         ></input>
       </ListItem>
-      <ListItem
-        title={Locale.Settings.Access.OpenAI.ApiKey.Title}
-        subTitle={Locale.Settings.Access.OpenAI.ApiKey.SubTitle}
-      >
+      <ListItem title="AhamAI API Key" subTitle="Your AhamAI API key">
         <PasswordInput
           value={accessStore.openaiApiKey}
           type="text"
-          placeholder={Locale.Settings.Access.OpenAI.ApiKey.Placeholder}
+          placeholder="Enter your AhamAI API key"
           onChange={(e) => {
             accessStore.update(
               (access) => (access.openaiApiKey = e.currentTarget.value),
@@ -1397,7 +1391,7 @@ export function Settings() {
                     </Select>
                   </ListItem>
 
-                  {openAIConfigComponent}
+                  {ahamaiConfigComponent}
                   {azureConfigComponent}
                   {googleConfigComponent}
                   {anthropicConfigComponent}
