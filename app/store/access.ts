@@ -41,9 +41,7 @@ const DEFAULT_ALIBABA_URL = isApp
 
 const DEFAULT_STABILITY_URL = isApp
   ? DEFAULT_API_HOST + "/api/proxy/stability"
-  : ApiPath.Stability;
-
-const DEFAULT_MJ_PROXY_URL = ApiPath.Mj as string;
+  : "";
 
 const DEFAULT_ACCESS_STATE = {
   accessCode: "",

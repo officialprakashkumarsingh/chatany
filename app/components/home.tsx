@@ -1,7 +1,5 @@
 "use client";
 
-import { Mj } from "@/app/components/mj";
-
 require("../polyfill");
 
 import { useState, useEffect } from "react";
@@ -54,14 +52,6 @@ const Chat = dynamic(async () => (await import("./chat")).Chat, {
 });
 
 const NewChat = dynamic(async () => (await import("./new-chat")).NewChat, {
-  loading: () => <Loading noLogo />,
-});
-
-const MaskPage = dynamic(async () => (await import("./mask")).MaskPage, {
-  loading: () => <Loading noLogo />,
-});
-
-const Sd = dynamic(async () => (await import("./sd")).Sd, {
   loading: () => <Loading noLogo />,
 });
 
@@ -146,10 +136,6 @@ function Screen() {
   const isArtifact = location.pathname.includes(Path.Artifacts);
   const isHome = location.pathname === Path.Home;
   const isAuth = location.pathname === Path.Auth;
-  const isSd = location.pathname === Path.Sd;
-  const isMj = location.pathname === Path.Mj;
-  const isMjNew = location.pathname === Path.MjNew;
-  const isSdNew = location.pathname === Path.SdNew;
 
   const isMobileScreen = useMobileScreen();
   const shouldTightBorder =
@@ -166,10 +152,9 @@ function Screen() {
       </Routes>
     );
   }
+
   const renderContent = () => {
     if (isAuth) return <AuthPage />;
-    if (isSd || isSdNew) return <Sd />;
-    if (isMj || isMjNew) return <Mj />;
     return (
       <>
         <SideBar className={isHome ? styles["sidebar-show"] : ""} />
@@ -177,7 +162,6 @@ function Screen() {
           <Routes>
             <Route path={Path.Home} element={<Chat />} />
             <Route path={Path.NewChat} element={<NewChat />} />
-            <Route path={Path.Masks} element={<MaskPage />} />
             <Route path={Path.Chat} element={<Chat />} />
             <Route path={Path.Settings} element={<Settings />} />
           </Routes>

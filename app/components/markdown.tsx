@@ -70,7 +70,7 @@ export function PreCode(props: { children: any }) {
   const { height } = useWindowSize();
   const chatStore = useChatStore();
   const session = chatStore.currentSession();
-  const plugins = session.mask?.plugin;
+  const plugins = session.plugin;
 
   const renderArtifacts = useDebouncedCallback(() => {
     if (!ref.current) return;

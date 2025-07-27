@@ -32,12 +32,7 @@ export enum Path {
   Chat = "/chat",
   Settings = "/settings",
   NewChat = "/new-chat",
-  Masks = "/masks",
   Auth = "/auth",
-  Sd = "/sd",
-  Mj = "/mj",
-  SdNew = "/sd-new",
-  MjNew = "/mj-new",
   Artifacts = "/artifacts",
 }
 
@@ -52,7 +47,6 @@ export enum ApiPath {
   Alibaba = "/api/alibaba",
   Stability = "/api/stability",
   Artifacts = "/api/artifacts",
-  Mj = "/api/mj",
 }
 
 export enum SlotID {
@@ -61,7 +55,6 @@ export enum SlotID {
 }
 
 export enum FileName {
-  Masks = "masks.json",
   Prompts = "prompts.json",
 }
 
@@ -73,12 +66,9 @@ export enum StoreKey {
   Chat = "chat-next-web-store",
   Access = "access-control",
   Config = "app-config",
-  Mask = "mask-store",
   Prompt = "prompt-store",
   Update = "chat-update",
   Sync = "sync",
-  SdList = "sd-list",
-  MjList = "mj-list",
 }
 
 export const DEFAULT_SIDEBAR_WIDTH = 300;
@@ -263,9 +253,4 @@ export const internalAllowedWebDavEndpoints = [
   "https://dav.idrivesync.com",
   "https://webdav.yandex.com",
   "https://app.koofr.net/dav/Koofr",
-];
-
-export const PLUGINS = [
-  { name: "Stable Diffusion", path: Path.Sd, icon: "🎨" },
-  { name: "Midjourney (Unofficial)", path: Path.Mj, icon: "🎨" },
 ];

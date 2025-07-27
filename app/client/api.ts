@@ -192,7 +192,7 @@ export function getHeaders() {
   const clientConfig = getClientConfig();
 
   function getConfig() {
-    const modelConfig = chatStore.currentSession().mask.modelConfig;
+    const modelConfig = chatStore.currentSession().modelConfig;
     const isGoogle = modelConfig.providerName == ServiceProvider.Google;
     const isAzure = modelConfig.providerName === ServiceProvider.Azure;
     const isAnthropic = modelConfig.providerName === ServiceProvider.Anthropic;

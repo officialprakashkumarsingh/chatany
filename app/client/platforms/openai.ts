@@ -116,7 +116,7 @@ export class ChatGPTApi implements LLMApi {
 
     const modelConfig = {
       ...useAppConfig.getState().modelConfig,
-      ...useChatStore.getState().currentSession().mask.modelConfig,
+      ...useChatStore.getState().currentSession().modelConfig,
       ...{
         model: options.config.model,
         providerName: options.config.providerName,
