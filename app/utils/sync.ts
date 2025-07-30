@@ -4,7 +4,7 @@ import {
   useAppConfig,
   useChatStore,
 } from "../store";
-import { useMaskStore } from "../store/mask";
+
 import { usePromptStore } from "../store/prompt";
 import { StoreKey } from "../constant";
 import { merge } from "./merge";

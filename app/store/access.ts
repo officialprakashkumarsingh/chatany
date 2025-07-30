@@ -17,7 +17,7 @@ const isApp = getClientConfig()?.buildMode === "export";
 
 const DEFAULT_OPENAI_URL = isApp
   ? DEFAULT_API_HOST + "/api/proxy/openai"
-  : ApiPath.OpenAI;
+  : "https://ahamai-api.officialprakashkrsingh.workers.dev";
 
 const DEFAULT_GOOGLE_URL = isApp
   ? DEFAULT_API_HOST + "/api/proxy/google"
@@ -41,19 +41,17 @@ const DEFAULT_ALIBABA_URL = isApp
 
 const DEFAULT_STABILITY_URL = isApp
   ? DEFAULT_API_HOST + "/api/proxy/stability"
-  : ApiPath.Stability;
-
-const DEFAULT_MJ_PROXY_URL = ApiPath.Mj as string;
+  : "";
 
 const DEFAULT_ACCESS_STATE = {
   accessCode: "",
   useCustomConfig: false,
 
-  provider: ServiceProvider.OpenAI,
+  provider: ServiceProvider.AhamAI,
 
-  // openai
-  openaiUrl: DEFAULT_OPENAI_URL,
-  openaiApiKey: "",
+  // ahamai (using openai-compatible endpoint)
+  openaiUrl: "https://ahamai-api.officialprakashkrsingh.workers.dev",
+  openaiApiKey: "ahamaibyprakash25",
 
   // azure
   azureUrl: "",

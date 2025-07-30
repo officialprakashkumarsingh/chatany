@@ -58,8 +58,8 @@ async function handle(
     // list models
     if (subpath === OpenaiPath.ListModelPath && response.status === 200) {
       const resJson = (await response.json()) as OpenAIListModelResponse;
-      const availableModels = getModels(resJson);
-      return NextResponse.json(availableModels, {
+      // For AhamAI, return all available models without filtering
+      return NextResponse.json(resJson, {
         status: response.status,
       });
     }

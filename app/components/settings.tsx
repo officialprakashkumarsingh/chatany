@@ -76,7 +76,7 @@ import { Avatar, AvatarPicker } from "./emoji";
 import { getClientConfig } from "../config/client";
 import { useSyncStore } from "../store/sync";
 import { nanoid } from "nanoid";
-import { useMaskStore } from "../store/mask";
+
 import { ProviderType } from "../utils/cloud";
 
 function EditPromptModal(props: { id: string; onClose: () => void }) {
@@ -477,7 +477,6 @@ function SyncItems() {
   const syncStore = useSyncStore();
   const chatStore = useChatStore();
   const promptStore = usePromptStore();
-  const maskStore = useMaskStore();
   const couldSync = useMemo(() => {
     return syncStore.cloudSync();
   }, [syncStore]);
@@ -492,9 +491,8 @@ function SyncItems() {
       chat: sessions.length,
       message: messageCount,
       prompt: Object.keys(promptStore.prompts).length,
-      mask: Object.keys(maskStore.masks).length,
     };
-  }, [chatStore.sessions, maskStore.masks, promptStore.prompts]);
+  }, [chatStore.sessions, promptStore.prompts]);
 
   return (
     <>
@@ -696,13 +694,10 @@ export function Settings() {
       </ListItem>
     );
 
-  const openAIConfigComponent = accessStore.provider ===
-    ServiceProvider.OpenAI && (
+  const ahamaiConfigComponent = accessStore.provider ===
+    ServiceProvider.AhamAI && (
     <>
-      <ListItem
-        title={Locale.Settings.Access.OpenAI.Endpoint.Title}
-        subTitle={Locale.Settings.Access.OpenAI.Endpoint.SubTitle}
-      >
+      <ListItem title="AhamAI Endpoint" subTitle="AhamAI API endpoint URL">
         <input
           type="text"
           value={accessStore.openaiUrl}
@@ -714,14 +709,11 @@ export function Settings() {
           }
         ></input>
       </ListItem>
-      <ListItem
-        title={Locale.Settings.Access.OpenAI.ApiKey.Title}
-        subTitle={Locale.Settings.Access.OpenAI.ApiKey.SubTitle}
-      >
+      <ListItem title="AhamAI API Key" subTitle="Your AhamAI API key">
         <PasswordInput
           value={accessStore.openaiApiKey}
           type="text"
-          placeholder={Locale.Settings.Access.OpenAI.ApiKey.Placeholder}
+          placeholder="Enter your AhamAI API key"
           onChange={(e) => {
             accessStore.update(
               (access) => (access.openaiApiKey = e.currentTarget.value),
@@ -1397,7 +1389,7 @@ export function Settings() {
                     </Select>
                   </ListItem>
 
-                  {openAIConfigComponent}
+                  {ahamaiConfigComponent}
                   {azureConfigComponent}
                   {googleConfigComponent}
                   {anthropicConfigComponent}

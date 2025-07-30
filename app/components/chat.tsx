@@ -18,7 +18,7 @@ import CopyIcon from "../icons/copy.svg";
 import LoadingIcon from "../icons/three-dots.svg";
 import LoadingButtonIcon from "../icons/loading.svg";
 import PromptIcon from "../icons/prompt.svg";
-import MaskIcon from "../icons/mask.svg";
+
 import MaxIcon from "../icons/max.svg";
 import MinIcon from "../icons/min.svg";
 import ResetIcon from "../icons/reload.svg";
@@ -93,8 +93,6 @@ import {
   Plugin,
 } from "../constant";
 import { Avatar } from "./emoji";
-import { ContextPrompts, MaskAvatar, MaskConfig } from "./mask";
-import { useMaskStore } from "../store/mask";
 import { ChatCommandPrefix, useChatCommand, useCommand } from "../command";
 import { prettyObject } from "../utils/format";
 import { ExportMessageModal } from "./exporter";
@@ -109,8 +107,6 @@ const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
 export function SessionConfigModel(props: { onClose: () => void }) {
   const chatStore = useChatStore();
   const session = chatStore.currentSession();
-  const maskStore = useMaskStore();
-  const navigate = useNavigate();
 
   return (
     <div className="modal-mask">
@@ -131,40 +127,14 @@ export function SessionConfigModel(props: { onClose: () => void }) {
               }
             }}
           />,
-          <IconButton
-            key="copy"
-            icon={<CopyIcon />}
-            bordered
-            text={Locale.Chat.Config.SaveAs}
-            onClick={() => {
-              navigate(Path.Masks);
-              setTimeout(() => {
-                maskStore.create(session.mask);
-              }, 500);
-            }}
-          />,
         ]}
       >
-        <MaskConfig
-          mask={session.mask}
-          updateMask={(updater) => {
-            const mask = { ...session.mask };
-            updater(mask);
-            chatStore.updateCurrentSession((session) => (session.mask = mask));
-          }}
-          shouldSyncFromGlobal
-          extraListItems={
-            session.mask.modelConfig.sendMemory ? (
-              <ListItem
-                className="copyable"
-                title={`${Locale.Memory.Title} (${session.lastSummarizeIndex} of ${session.messages.length})`}
-                subTitle={session.memoryPrompt || Locale.Memory.EmptyContent}
-              ></ListItem>
-            ) : (
-              <></>
-            )
-          }
-        ></MaskConfig>
+        <div className={styles["session-config"]}>
+          <ListItem
+            title={`${Locale.Memory.Title} (${session.lastSummarizeIndex} of ${session.messages.length})`}
+            subTitle={session.memoryPrompt || Locale.Memory.EmptyContent}
+          />
+        </div>
       </Modal>
     </div>
   );
@@ -177,7 +147,7 @@ function PromptToast(props: {
 }) {
   const chatStore = useChatStore();
   const session = chatStore.currentSession();
-  const context = session.mask.context;
+  const context = session.context;
 
   return (
     <div className={styles["prompt-toast"]} key="prompt-toast">
@@ -456,10 +426,10 @@ export function ChatActions(props: {
   const stopAll = () => ChatControllerPool.stopAll();
 
   // switch model
-  const currentModel = chatStore.currentSession().mask.modelConfig.model;
+  const currentModel = chatStore.currentSession().modelConfig.model;
   const currentProviderName =
-    chatStore.currentSession().mask.modelConfig?.providerName ||
-    ServiceProvider.OpenAI;
+    chatStore.currentSession().modelConfig?.providerName ||
+    ServiceProvider.AhamAI;
   const allModels = useAllModels();
   const models = useMemo(() => {
     const filteredModels = allModels.filter((m) => m.available);
@@ -502,8 +472,8 @@ export function ChatActions(props: {
       // show next model to default model if exist
       let nextModel = models.find((model) => model.isDefault) || models[0];
       chatStore.updateCurrentSession((session) => {
-        session.mask.modelConfig.model = nextModel.name;
-        session.mask.modelConfig.providerName = nextModel?.provider
+        session.modelConfig.model = nextModel.name;
+        session.modelConfig.providerName = nextModel?.provider
           ?.providerName as ServiceProvider;
       });
       showToast(
@@ -568,14 +538,6 @@ export function ChatActions(props: {
       />
 
       <ChatAction
-        onClick={() => {
-          navigate(Path.Masks);
-        }}
-        text={Locale.Chat.InputActions.Masks}
-        icon={<MaskIcon />}
-      />
-
-      <ChatAction
         text={Locale.Chat.InputActions.Clear}
         icon={<BreakIcon />}
         onClick={() => {
@@ -612,10 +574,10 @@ export function ChatActions(props: {
             if (s.length === 0) return;
             const [model, providerName] = s[0].split("@");
             chatStore.updateCurrentSession((session) => {
-              session.mask.modelConfig.model = model as ModelType;
-              session.mask.modelConfig.providerName =
+              session.modelConfig.model = model as ModelType;
+              session.modelConfig.providerName =
                 providerName as ServiceProvider;
-              session.mask.syncGlobalConfig = false;
+              session.syncGlobalConfig = false;
             });
             if (providerName == "ByteDance") {
               const selectedModel = models.find(
@@ -638,7 +600,7 @@ export function ChatActions(props: {
       {showPluginSelector && (
         <Selector
           multiple
-          defaultSelectedValue={chatStore.currentSession().mask?.plugin}
+          defaultSelectedValue={chatStore.currentSession().plugin}
           items={[
             {
               title: Locale.Plugin.Artifacts,
@@ -649,7 +611,7 @@ export function ChatActions(props: {
           onSelection={(s) => {
             const plugin = s[0];
             chatStore.updateCurrentSession((session) => {
-              session.mask.plugin = s;
+              session.plugin = s[0];
             });
             if (plugin) {
               showToast(plugin);
@@ -710,14 +672,7 @@ export function EditMessageModal(props: { onClose: () => void }) {
             ></input>
           </ListItem>
         </List>
-        <ContextPrompts
-          context={messages}
-          updateContext={(updater) => {
-            const newMessages = messages.slice();
-            updater(newMessages);
-            setMessages(newMessages);
-          }}
-        />
+        <div>{/* Context prompts functionality removed */}</div>
       </Modal>
     </div>
   );
@@ -891,10 +846,10 @@ function _Chat() {
         }
       });
 
-      // auto sync mask config from global config
-      if (session.mask.syncGlobalConfig) {
-        console.log("[Mask] syncing from global, name = ", session.mask.name);
-        session.mask.modelConfig = { ...config.modelConfig };
+      // auto sync model config from global config
+      if (session.syncGlobalConfig) {
+        console.log("[Session] syncing from global, topic = ", session.topic);
+        session.modelConfig = { ...config.modelConfig };
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -996,9 +951,7 @@ function _Chat() {
   };
 
   const onPinMessage = (message: ChatMessage) => {
-    chatStore.updateCurrentSession((session) =>
-      session.mask.context.push(message),
-    );
+    chatStore.updateCurrentSession((session) => session.context.push(message));
 
     showToast(Locale.Chat.Actions.PinToastContent, {
       text: Locale.Chat.Actions.PinToastAction,
@@ -1009,8 +962,8 @@ function _Chat() {
   };
 
   const context: RenderMessage[] = useMemo(() => {
-    return session.mask.hideContext ? [] : session.mask.context.slice();
-  }, [session.mask.context, session.mask.hideContext]);
+    return session.hideContext ? [] : session.context.slice();
+  }, [session.context, session.hideContext]);
   const accessStore = useAccessStore();
 
   if (
@@ -1188,7 +1141,7 @@ function _Chat() {
 
   const handlePaste = useCallback(
     async (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
-      const currentModel = chatStore.currentSession().mask.modelConfig.model;
+      const currentModel = chatStore.currentSession().modelConfig.model;
       if (!isVisionModel(currentModel)) {
         return;
       }
@@ -1398,7 +1351,7 @@ function _Chat() {
                               }
                             }
                             chatStore.updateCurrentSession((session) => {
-                              const m = session.mask.context
+                              const m = session.context
                                 .concat(session.messages)
                                 .find((m) => m.id === message.id);
                               if (m) {
@@ -1415,12 +1368,7 @@ function _Chat() {
                           {["system"].includes(message.role) ? (
                             <Avatar avatar="2699-fe0f" />
                           ) : (
-                            <MaskAvatar
-                              avatar={session.mask.avatar}
-                              model={
-                                message.model || session.mask.modelConfig.model
-                              }
-                            />
+                            <Avatar avatar={session.avatar || "1f916"} />
                           )}
                         </>
                       )}

@@ -1,104 +1,101 @@
 <div align="center">
 
-<h1 align="center">🌻 ChatAny</h1>
+<h1 align="center">🌻 AhamAI</h1>
 
-中文 | [English](./README_EN.md)
+English | [中文](./README_EN.md)
 
-一键拥有你自己的 `ChatGPT`+`众多AI` 的聚合网页服务（基于[ChatGPT-Next-Web](https://github.com/ChatGPTNextWeb/ChatGPT-Next-Web)开发）
+Chat with multiple LLMs and API providers - Your AI Assistant
 
-[QQ交流群](https://github.com/ChatAnyTeam/ChatAny/issues/30) | [💥PRO版本](https://github.com/Licoy/GoAmzAI)
+AhamAI - One-click access to your own AI assistant with multiple LLM support
 
-[![WordPress+ChatGPT支持](https://img.shields.io/badge/WordPress-AIGC%20部署-red.svg?logo=wordpress&logoColor=red)](https://github.com/Licoy/wordpress-theme-puock)
+[Community Group](https://github.com/AhamAI/AhamAI/issues/30) | [💥PRO Version](https://github.com/Licoy/GoAmzAI)
 
-![主界面](./docs/images/cover.png)
+[![WordPress+ChatGPT Support](https://img.shields.io/badge/WordPress-AIGC%20Deployment-red.svg?logo=wordpress&logoColor=red)](https://github.com/Licoy/wordpress-theme-puock)
+
+![Main Interface](./docs/images/cover.png)
 
 </div>
 
-## 功能支持
-> 🍭 PRO版本支持更强大的功能：
-> - 最低1C1G的服务器就能流畅运行
-> - 宝塔极速可视化部署、配置简单易懂
-> - 站点完全自适应支持PC、平板、手机
-> - 低内存占用，Golang开发原生高并发支持
-> - 包含AI对话、AI绘画、AI音乐、AI视频、AI生成PPT、PDF解析对话、AI应用支持等众多AI模块
-> - 具有非常完善的运营机制，包括但不限于套餐系统、兑换码系统、邀请奖励、签到福利、推广返利等等
-> - [🫱 点我立即了解及体验PRO版本](https://github.com/Licoy/GoAmzAI)
+## Features
+> 🍭 PRO Version supports more powerful features:
+> - Runs smoothly on servers with as low as 1C1G
+> - Ultra-fast visual deployment with BT panel, simple and understandable configuration
+> - Fully responsive site supporting PC, tablet, and mobile
+> - Low memory usage, native high concurrency support with Golang development
+> - Includes multiple AI modules such as AI conversations, AI drawing, AI music, AI video, AI-generated PPT, PDF parsing conversations, AI application support, etc.
+> - Has a very complete operation mechanism, including but not limited to package systems, redemption code systems, invitation rewards, check-in benefits, promotion rebates, etc.
+> - [🫱 Click here to learn about and experience the PRO version](https://github.com/Licoy/GoAmzAI)
 
-### 已支持
-- [x] 原`ChatGPT-Next-Web`所有功能
+### Supported Features
+- [x] All original features
+- [x] Multiple LLM API provider support
+- [x] Dynamic model fetching from API providers
+- [x] AhamAI API integration with OpenAI-compatible endpoint
 - [x] StabilityAI
-  - [x] 支持 Stable Image Ultra
-  - [x] 支持 Stable Image Core
-  - [x] 支持 Stable Diffusion 3
-- [x] Midjourney `(非官方)`
-  - [x] Midjourney `Imgine` `Upscale`  `Variation`  `Zoom`  `Vary`  `Pan`  `Reroll`  `Describe`  `Blend` 等众多操作，完美支持 Midjourney 图像生成之后的任何操作
-  - [x] Midjourney 区域重绘（Vary Region）支持
-  - [x] Midjourney 参考图片
-  - [x] 绘图进度百分比、实时图像显示
+  - [x] Support for Stable Image Ultra
+  - [x] Support for Stable Image Core
+  - [x] Support for Stable Diffusion 3
+- [x] Midjourney `(Unofficial)`
+  - [x] Midjourney `Imagine` `Upscale` `Variation` `Zoom` `Vary` `Pan` `Reroll` `Describe` `Blend` and many other operations, perfect support for any operation after Midjourney image generation
+  - [x] Midjourney regional redrawing (Vary Region) support
+  - [x] Midjourney reference images
+  - [x] Drawing progress percentage, real-time image display
 
-## MidjourneyAPI说明
-> 本项目Midjourney相关API接口采用以下开源项目或同类项目提供API生成能力支持，使用本项目之前您需要先自建此服务，或者使用第三方中转平台的API。
+## API Configuration
+The application is configured to use AhamAI API provider:
+- **Endpoint**: `https://ahamai-api.officialprakashkrsingh.workers.dev`
+- **Default API Key**: `ahamaibyprakash25`
+- **Models**: Dynamically fetched from `/v1/models` endpoint
 
-### 开源Midjourney-Proxy
-- 项目地址：[trueai-org/midjourney-proxy](https://github.com/trueai-org/midjourney-proxy)
+## MidjourneyAPI Description
+> This project's Midjourney-related API interfaces use the following open-source projects or similar projects to provide API generation capability support. Before using this project, you need to self-host this service or use a third-party relay platform's API.
 
-## 参数说明
+### Open Source Midjourney-Proxy
+- Project Address: [trueai-org/midjourney-proxy](https://github.com/trueai-org/midjourney-proxy)
+
+## Parameter Description
 ### `MJ_PROXY_URL`
-MJ Proxy的API链接地址
+MJ Proxy API link address
 ### `MJ_PROXY_KEY`
-MJ Proxy的API密钥
+MJ Proxy API key
 ### `CODE`
-（可选）设置页面中的访问密码
-### `...其余参数`
-与 ChatGPT-Next-Web 一致
+(Optional) Access password in the settings page
+### `...Other parameters`
+Consistent with the original project
 
-## 部署
+## Deployment
 ### Docker
 ```shell
 docker run -d -p 3000:3000 \
-   -e OPENAI_API_KEY="sk-xxx" \
-   -e BASE_URL="https://api.openai.com" \
+   -e OPENAI_API_KEY="ahamaibyprakash25" \
+   -e BASE_URL="https://ahamai-api.officialprakashkrsingh.workers.dev" \
    -e MJ_PROXY_URL="" \
    -e MJ_PROXY_KEY="" \
-   licoy/chatany:latest
+   ahamai/ahamai:latest
 ```
-### Vercel
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FChatAnyTeam%2FChatAny&env=OPENAI_API_KEY&env=MJ_PROXY_URL&env=MJ_PROXY_KEY&env=CODE&project-name=chat-any&repository-name=ChatAny)
-### Railway
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/1g6vDL?referralCode=vvEj-K)
-### Sealos
-[![](https://raw.githubusercontent.com/labring-actions/templates/main/Deploy-on-Sealos.svg)](https://cloud.sealos.io/?openapp=system-template%3FtemplateName%3Dchatany)
-### 手动部署
-- clone本项目到本地
-- 安装依赖
+### Manual Deployment
+- Clone this project locally
+- Install dependencies
 ```shell
 npm install
 npm run build
-npm run start // #或者开发模式启动： npm run dev
+npm run start // #Or development mode: npm run dev
 ```
-## 使用
-### 创建绘画
-部署好后，点击左上方的绘画，选择您需要使用的绘画模型即可进入：
+## Usage
+### Create Drawing
+After deployment, click on the drawing in the upper left, select the drawing model you need to use to enter:
 ![step-1](./docs/images/step-1.png)
-## 截图
-### Midjourney生成主界面
+## Screenshots
+### Midjourney Generation Main Interface
 ![step-1](./docs/images/step-2.png)
-### Midjourney区域重绘
+### Midjourney Regional Redrawing
 ![step-1](./docs/images/step-5.png)
-### StabilityAI生成主界面
+### StabilityAI Generation Main Interface
 ![step-1](./docs/images/step-3.png)
-### 自定义配置接口
+### Custom Configuration Interface
 ![step-1](./docs/images/step-4.png)
-### 更多功能
-等你自行发掘
+### More Features
+Discover them yourself
 
-## 第三方中转API
-> 以下为第三方中转API，本项目不做任何担保，请自行选择使用，若遇到任何疑问请联系对应的平台客服。
-
-[![GPTNB中转API](https://img.shields.io/badge/GPTNB%20优质的第三方官转API-2E8B57.svg?logo=openai&logoColor=green&style=for-the-badge)](https://goapi.gptnb.ai)
-
-[![GPTNB中转API](https://img.shields.io/badge/VMAN%20优选的第三方高速API-50616D.svg?logo=openai&logoColor=green&style=for-the-badge)](https://api.mjdjourney.cn)
-
-
-## 开源协议
+## Open Source License
 [MIT](./LICENSE)

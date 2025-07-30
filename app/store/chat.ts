@@ -3,7 +3,6 @@ import { trimTopic, getMessageTextContent } from "../utils";
 import Locale, { getLang } from "../locales";
 import { showToast } from "../components/ui-lib";
 import { ModelConfig, ModelType, useAppConfig } from "./config";
-import { createEmptyMask, Mask } from "./mask";
 import {
   DEFAULT_INPUT_TEMPLATE,
   DEFAULT_MODELS,
@@ -62,7 +61,13 @@ export interface ChatSession {
   lastSummarizeIndex: number;
   clearContextIndex?: number;
 
-  mask: Mask;
+  // Direct model configuration instead of mask
+  modelConfig: ModelConfig;
+  context: ChatMessage[];
+  hideContext?: boolean;
+  avatar?: string;
+  syncGlobalConfig?: boolean;
+  plugin?: string;
 }
 
 export const DEFAULT_TOPIC = Locale.Store.DefaultTopic;
@@ -72,6 +77,7 @@ export const BOT_HELLO: ChatMessage = createMessage({
 });
 
 function createEmptySession(): ChatSession {
+  const config = useAppConfig.getState();
   return {
     id: nanoid(),
     topic: DEFAULT_TOPIC,
@@ -85,7 +91,12 @@ function createEmptySession(): ChatSession {
     lastUpdate: Date.now(),
     lastSummarizeIndex: 0,
 
-    mask: createEmptyMask(),
+    // Use default model configuration
+    modelConfig: { ...config.modelConfig },
+    context: [],
+    hideContext: false,
+    avatar: "1f916",
+    syncGlobalConfig: true,
   };
 }
 
@@ -215,22 +226,8 @@ export const useChatStore = createPersistStore(
         });
       },
 
-      newSession(mask?: Mask) {
+      newSession() {
         const session = createEmptySession();
-
-        if (mask) {
-          const config = useAppConfig.getState();
-          const globalModelConfig = config.modelConfig;
-
-          session.mask = {
-            ...mask,
-            modelConfig: {
-              ...globalModelConfig,
-              ...mask.modelConfig,
-            },
-          };
-          session.topic = mask.name;
-        }
 
         set((state) => ({
           currentSessionIndex: 0,
@@ -313,7 +310,7 @@ export const useChatStore = createPersistStore(
 
       async onUserInput(content: string, attachImages?: string[]) {
         const session = get().currentSession();
-        const modelConfig = session.mask.modelConfig;
+        const modelConfig = session.modelConfig;
 
         const userContent = fillTemplateWith(content, modelConfig);
         console.log("[User Input] after template: ", userContent);
@@ -434,18 +431,18 @@ export const useChatStore = createPersistStore(
 
       getMessagesWithMemory() {
         const session = get().currentSession();
-        const modelConfig = session.mask.modelConfig;
+        const modelConfig = session.modelConfig;
         const clearContextIndex = session.clearContextIndex ?? 0;
         const messages = session.messages.slice();
         const totalMessageCount = session.messages.length;
 
         // in-context prompts
-        const contextPrompts = session.mask.context.slice();
+        const contextPrompts = session.context.slice();
 
         // system prompts, to get close to OpenAI Web ChatGPT
         const shouldInjectSystemPrompts =
           modelConfig.enableInjectSystemPrompts &&
-          session.mask.modelConfig.model.startsWith("gpt-");
+          session.modelConfig.model.startsWith("gpt-");
 
         var systemPrompts: ChatMessage[] = [];
         systemPrompts = shouldInjectSystemPrompts
@@ -540,7 +537,7 @@ export const useChatStore = createPersistStore(
       summarizeSession() {
         const config = useAppConfig.getState();
         const session = get().currentSession();
-        const modelConfig = session.mask.modelConfig;
+        const modelConfig = session.modelConfig;
 
         const api: ClientApi = getClientApi(modelConfig.providerName);
 
@@ -563,7 +560,7 @@ export const useChatStore = createPersistStore(
           api.llm.chat({
             messages: topicMessages,
             config: {
-              model: getSummarizeModel(session.mask.modelConfig.model),
+              model: getSummarizeModel(session.modelConfig.model),
               stream: false,
             },
             onFinish(message) {
@@ -625,7 +622,7 @@ export const useChatStore = createPersistStore(
             config: {
               ...modelcfg,
               stream: true,
-              model: getSummarizeModel(session.mask.modelConfig.model),
+              model: getSummarizeModel(session.modelConfig.model),
             },
             onUpdate(message) {
               session.memoryPrompt = message;
@@ -683,9 +680,9 @@ export const useChatStore = createPersistStore(
           const newSession = createEmptySession();
           newSession.topic = oldSession.topic;
           newSession.messages = [...oldSession.messages];
-          newSession.mask.modelConfig.sendMemory = true;
-          newSession.mask.modelConfig.historyMessageCount = 4;
-          newSession.mask.modelConfig.compressMessageLengthThreshold = 1000;
+          newSession.modelConfig.sendMemory = true;
+          newSession.modelConfig.historyMessageCount = 4;
+          newSession.modelConfig.compressMessageLengthThreshold = 1000;
           newState.sessions.push(newSession);
         }
       }
@@ -704,12 +701,12 @@ export const useChatStore = createPersistStore(
         newState.sessions.forEach((s) => {
           if (
             // Exclude those already set by user
-            !s.mask.modelConfig.hasOwnProperty("enableInjectSystemPrompts")
+            !s.modelConfig.hasOwnProperty("enableInjectSystemPrompts")
           ) {
             // Because users may have changed this configuration,
             // the user's current configuration is used instead of the default
             const config = useAppConfig.getState();
-            s.mask.modelConfig.enableInjectSystemPrompts =
+            s.modelConfig.enableInjectSystemPrompts =
               config.modelConfig.enableInjectSystemPrompts;
           }
         });

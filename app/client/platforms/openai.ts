@@ -59,7 +59,7 @@ export interface RequestPayload {
 }
 
 export class ChatGPTApi implements LLMApi {
-  private disableListModels = true;
+  private disableListModels = false;
 
   path(path: string): string {
     const accessStore = useAccessStore.getState();
@@ -116,7 +116,7 @@ export class ChatGPTApi implements LLMApi {
 
     const modelConfig = {
       ...useAppConfig.getState().modelConfig,
-      ...useChatStore.getState().currentSession().mask.modelConfig,
+      ...useChatStore.getState().currentSession().modelConfig,
       ...{
         model: options.config.model,
         providerName: options.config.providerName,
@@ -396,30 +396,40 @@ export class ChatGPTApi implements LLMApi {
       return DEFAULT_MODELS.slice();
     }
 
-    const res = await fetch(this.path(OpenaiPath.ListModelPath), {
-      method: "GET",
-      headers: {
-        ...getHeaders(),
-      },
-    });
+    try {
+      const res = await fetch(this.path(OpenaiPath.ListModelPath), {
+        method: "GET",
+        headers: {
+          ...getHeaders(),
+        },
+      });
 
-    const resJson = (await res.json()) as OpenAIListModelResponse;
-    const chatModels = resJson.data?.filter((m) => m.id.startsWith("gpt-"));
-    console.log("[Models]", chatModels);
+      if (!res.ok) {
+        console.error("[Models] Failed to fetch models:", res.status);
+        return [];
+      }
 
-    if (!chatModels) {
+      const resJson = (await res.json()) as OpenAIListModelResponse;
+      const allModels = resJson.data || [];
+      console.log("[Models] Fetched from AhamAI:", allModels);
+
+      if (!allModels || allModels.length === 0) {
+        return [];
+      }
+
+      return allModels.map((m) => ({
+        name: m.id,
+        available: true,
+        provider: {
+          id: "ahamai",
+          providerName: "AhamAI",
+          providerType: "openai",
+        },
+      }));
+    } catch (error) {
+      console.error("[Models] Error fetching models:", error);
       return [];
     }
-
-    return chatModels.map((m) => ({
-      name: m.id,
-      available: true,
-      provider: {
-        id: "openai",
-        providerName: "OpenAI",
-        providerType: "openai",
-      },
-    }));
   }
 }
 export { OpenaiPath };

@@ -129,7 +129,7 @@ export async function requestOpenai(req: NextRequest) {
         isModelAvailableInServer(
           serverConfig.customModels,
           jsonBody?.model as string,
-          ServiceProvider.OpenAI as string,
+          ServiceProvider.AhamAI as string,
         ) ||
         isModelAvailableInServer(
           serverConfig.customModels,

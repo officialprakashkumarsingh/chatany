@@ -33,7 +33,7 @@ import dynamic from "next/dynamic";
 import NextImage from "next/image";
 
 import { toBlob, toPng } from "html-to-image";
-import { DEFAULT_MASK_AVATAR } from "../store/mask";
+const DEFAULT_AVATAR = "1f916";
 
 import { prettyObject } from "../utils/format";
 import { EXPORT_MESSAGE_CLASS_NAME } from "../constant";
@@ -169,14 +169,14 @@ export function MessageExporter() {
   const selectedMessages = useMemo(() => {
     const ret: ChatMessage[] = [];
     if (exportConfig.includeContext) {
-      ret.push(...session.mask.context);
+      ret.push(...session.context);
     }
     ret.push(...session.messages.filter((m) => selection.has(m.id)));
     return ret;
   }, [
     exportConfig.includeContext,
     session.messages,
-    session.mask.context,
+    session.context,
     selection,
   ]);
   function preview() {
@@ -406,7 +406,7 @@ export function PreviewActions(props: {
 }
 
 function ExportAvatar(props: { avatar: string }) {
-  if (props.avatar === DEFAULT_MASK_AVATAR) {
+  if (props.avatar === DEFAULT_AVATAR) {
     return (
       <img
         src={BotIcon.src}
@@ -427,7 +427,6 @@ export function ImagePreviewer(props: {
 }) {
   const chatStore = useChatStore();
   const session = chatStore.currentSession();
-  const mask = session.mask;
   const config = useAppConfig();
 
   const previewRef = useRef<HTMLDivElement>(null);
@@ -546,12 +545,12 @@ export function ImagePreviewer(props: {
             <div className={styles["icons"]}>
               <ExportAvatar avatar={config.avatar} />
               <span className={styles["icon-space"]}>&</span>
-              <ExportAvatar avatar={mask.avatar} />
+              <ExportAvatar avatar={session.avatar || DEFAULT_AVATAR} />
             </div>
           </div>
           <div>
             <div className={styles["chat-info-item"]}>
-              {Locale.Exporter.Model}: {mask.modelConfig.model}
+              {Locale.Exporter.Model}: {session.modelConfig.model}
             </div>
             <div className={styles["chat-info-item"]}>
               {Locale.Exporter.Messages}: {props.messages.length}
@@ -575,7 +574,11 @@ export function ImagePreviewer(props: {
             >
               <div className={styles["avatar"]}>
                 <ExportAvatar
-                  avatar={m.role === "user" ? config.avatar : mask.avatar}
+                  avatar={
+                    m.role === "user"
+                      ? config.avatar
+                      : session.avatar || DEFAULT_AVATAR
+                  }
                 />
               </div>
 
